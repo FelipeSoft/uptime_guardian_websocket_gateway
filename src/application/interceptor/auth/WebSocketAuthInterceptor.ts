@@ -1,5 +1,6 @@
 import TokenManager from "@/core/TokenManager";
 import { WebSocketConnection } from "@/core/websocket/Connection";
+import { JsonWebTokenError } from "jsonwebtoken";
 
 export default class WebSocketAuthInterceptor {
     public constructor(
@@ -11,9 +12,20 @@ export default class WebSocketAuthInterceptor {
         if (token) {
             try {
                 const validToken = this.tokenManager.verify(token);
-                console.log(validToken);
+                const currentTime = Math.floor(Date.now() / 1000);
+
+                if (validToken.exp < currentTime) {
+                    this.webSocketConnection.close(4001, "expired token")
+                    return
+                }
+
+                if (validToken.proxyId !== 1) {
+                    this.webSocketConnection.close(4001, "malformed token")
+                }
             } catch (error) {
-                console.error(error);
+                if (error instanceof JsonWebTokenError) {
+                    this.webSocketConnection.close(4001, "malformed token")
+                }
             }
             return
         }
