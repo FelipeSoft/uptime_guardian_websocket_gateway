@@ -23,8 +23,8 @@ function init() {
         const webSocketAuthInterceptor = new WebSocketAuthInterceptor(ws, jwtTokenManagerAdapter);
         webSocketAuthInterceptor.execute(req.url.split("=")[1]);
 
-        websocketConnection.send("hello from server!");
         websocketConnection.on("message", (message) => {
+            websocketConnection.send("hello from server!");
             console.log(message.toString());
         });
     });
