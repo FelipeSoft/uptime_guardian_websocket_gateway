@@ -9,7 +9,7 @@ export default class KafkaStreamProcessor implements StreamProcessor {
     constructor() {
         try {
             this.kafka = new Kafka({
-                brokers: ["localhost:9092"],
+                brokers: ["192.168.200.154:9092"],
                 clientId: process.env.KAFKA_CLIENT_ID ?? "uptime_guardian_websocket_gateway"
             });
             this.producer = this.kafka.producer({
