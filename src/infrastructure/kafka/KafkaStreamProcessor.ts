@@ -1,32 +1,38 @@
-import { Kafka, Producer, Consumer, EachMessagePayload } from 'kafkajs';
+import { Kafka, Producer, Consumer, EachMessagePayload, Partitioners } from 'kafkajs';
 import StreamProcessor from '@/core/StreamProcessor';
 
 export default class KafkaStreamProcessor implements StreamProcessor {
     private kafka: Kafka;
     private producer: Producer;
     private consumer: Consumer;
-
+    
     constructor() {
-        this.kafka = new Kafka({
-            brokers: process.env.KAFKA_BROKERS?.split(",") ?? ["localhost:9092"],
-            clientId: process.env.KAFKA_CLIENT_ID
-        });
-        console.log(process.env.KAFKA_BROKERS?.split(","));
-        console.log(process.env.KAFKA_CLIENT_ID);
-        console.log(process.env.KAFKA_CONSUMERS_GROUP_ID);
-        this.producer = this.kafka.producer();
-        this.consumer = this.kafka.consumer({ groupId: process.env.KAFKA_CONSUMERS_GROUP_ID ?? "" });
+        try {
+            this.kafka = new Kafka({
+                brokers: ["localhost:9092"],
+                clientId: process.env.KAFKA_CLIENT_ID ?? "uptime_guardian_websocket_gateway"
+            });
+            this.producer = this.kafka.producer({
+                createPartitioner: Partitioners.LegacyPartitioner
+            });
+            this.consumer = this.kafka.consumer({
+                groupId: process.env.KAFKA_CONSUMERS_GROUP_ID ?? "uptime_guardian_websocket_gateway_consumers_group",
+            });
+        } catch (error) {
+            console.log("error on constructor: " + error)
+            throw error
+        }   
     }
 
     public async publish(topic: string, message: any): Promise<void> {
         try {
-            console.log("message to kafka publishing")
-            console.log(message)
             await this.producer.connect();
+            console.log("Connected with Apache Kafka");
             await this.producer.send({
                 topic,
                 messages: [{ value: JSON.stringify(message) }],
             });
+            console.log("Message sent!");
         } catch (error) {
             console.error('Failed to publish message:', error);
             throw error;

@@ -27,6 +27,7 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
+    "@kafkajs/confluent-schema-registry": "^3.4.1",
     "@types/jsonwebtoken": "^9.0.7",
     "dotenv": "^16.4.7",
     "jsonwebtoken": "^9.0.2",
