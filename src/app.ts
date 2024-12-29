@@ -25,6 +25,7 @@ function init() {
     const websocketServer = new WebSocketWsAdapter(websocketPort);
 
     websocketServer.on("connection", (ws, req) => {
+        console.log(req.url)
         const websocketConnection = new WebSocketWsConnectionAdapter(ws);
         const webSocketAuthInterceptor = new WebSocketAuthInterceptor(ws, jwtTokenManagerAdapter);
         webSocketAuthInterceptor.execute(req.url.split("=")[1]);

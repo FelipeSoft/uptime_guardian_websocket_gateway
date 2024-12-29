@@ -17,7 +17,7 @@ export default class JwtTokenManagerAdapter implements TokenManager {
         if (!process.env.JWT_SECRET) {
             throw new Error("failed on sign jwt token");
         }
-        return this.jwt.sign(body, process.env.JWT_SECRET, { expiresIn: "10m" });
+        return this.jwt.sign(body, process.env.JWT_SECRET, { expiresIn: "1m" });
     }
 
     public decode(token: string) {
