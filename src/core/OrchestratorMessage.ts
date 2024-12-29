@@ -21,6 +21,8 @@ export default class OrchestratorMessage {
         const msg = message as Input;
 
         return (
+            typeof msg.timestamp === "number" &&
+            msg.timestampType === "created_time" &&
             msg.unit === "proxy" &&
             typeof msg.identifier === "number" &&
             msg.data !== undefined &&
@@ -32,6 +34,8 @@ export default class OrchestratorMessage {
 }
 
 type Input = {
+    timestamp: number;
+    timestampType: "created_time";
     unit: "proxy";
     identifier: number;
     data: {

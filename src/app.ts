@@ -28,17 +28,23 @@ function init() {
         const websocketConnection = new WebSocketWsConnectionAdapter(ws);
         const webSocketAuthInterceptor = new WebSocketAuthInterceptor(ws, jwtTokenManagerAdapter);
         webSocketAuthInterceptor.execute(req.url.split("=")[1]);
-
-        websocketConnection.on("message", (message) => {
+    
+        websocketConnection.on("message", async (message) => {
             try {
                 const jsonMessage = JSON.parse(message.toString());
-                webSocketMessageOrchestratorInterceptor.execute(jsonMessage);
-            } catch (error: any) {
-                if (error instanceof Error) {
-                    ws.close(4000, error.message);
-                    return;
+                const result = await webSocketMessageOrchestratorInterceptor.execute(jsonMessage);
+                if (result.error) {
+                    ws.send(JSON.stringify({ error: true, message: result.message }));
+                    console.error("WebSocket error:", result.message);
                 }
-                ws.close(4000, "internal server error");
+            } catch (error) {
+                if (error instanceof Error) {
+                    ws.send(JSON.stringify({ error: true, message: error.message }));
+                    console.error("WebSocket error:", error.message);
+                } else {
+                    ws.send(JSON.stringify({ error: true, message: "Internal Server Error" }));
+                    console.error("WebSocket error: Internal server error");
+                }
             }
         });
     });
