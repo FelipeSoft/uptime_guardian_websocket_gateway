@@ -19,8 +19,8 @@ export default class WebSocketMessageOrchestratorInterceptor {
         const validInput = orchestratorMessage.getValidMessage();
         if (validInput) {
             this.streamProcessor.publish("websocket_gateway_to_notification_service", validInput);
-            this.streamProcessor.publish("websocket_gateway_to_metric_service", validInput);
-            this.streamProcessor.publish("websocket_gateway_to_metadata_service", validInput);
+            // this.streamProcessor.publish("websocket_gateway_to_metric_service", validInput);
+            // this.streamProcessor.publish("websocket_gateway_to_metadata_service", validInput);
         }
     }
 }
