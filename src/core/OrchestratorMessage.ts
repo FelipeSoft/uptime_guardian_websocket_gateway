@@ -15,6 +15,7 @@ export default class OrchestratorMessage {
         }
     }
 
+    // could implement a factory/strategy pattern if other possible messages formats appears
     private isValidInput(message: object): message is Input {
         if (typeof message !== "object" || message === null) return false;
 

@@ -33,6 +33,7 @@ function init() {
         websocketConnection.on("message", async (message) => {
             try {
                 const jsonMessage = JSON.parse(message.toString());
+                console.log(jsonMessage);
                 const result = await webSocketMessageOrchestratorInterceptor.execute(jsonMessage);
                 if (result.error) {
                     ws.send(JSON.stringify({ error: true, message: result.message }));
