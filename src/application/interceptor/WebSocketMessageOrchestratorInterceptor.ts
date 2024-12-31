@@ -1,10 +1,10 @@
-import OrchestratorMessage from "@/core/OrchestratorMessage";
+import OrchestratorMessage from "@/core/message/OrchestratorMessage";
 import StreamProcessor from "@/core/StreamProcessor";
 
 export default class WebSocketMessageOrchestratorInterceptor {
     public constructor(
         private readonly streamProcessor: StreamProcessor
-    ) {}
+    ) { }
 
     public async execute(message: Object): Promise<{ error?: boolean, message?: string }> {
         let orchestratorMessage;
@@ -18,6 +18,7 @@ export default class WebSocketMessageOrchestratorInterceptor {
         }
         const validInput = orchestratorMessage.getValidMessage();
         if (validInput) {
+            console.log(validInput);
             // this.streamProcessor.publish("websocket_gateway_to_notification_service", validInput);
             // this.streamProcessor.publish("websocket_gateway_to_metric_service", validInput);
             // this.streamProcessor.publish("websocket_gateway_to_metadata_service", validInput);

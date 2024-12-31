@@ -25,15 +25,22 @@ function init() {
     const websocketServer = new WebSocketWsAdapter(websocketPort);
 
     websocketServer.on("connection", (ws, req) => {
-        console.log(req.url)
         const websocketConnection = new WebSocketWsConnectionAdapter(ws);
         const webSocketAuthInterceptor = new WebSocketAuthInterceptor(ws, jwtTokenManagerAdapter);
-        webSocketAuthInterceptor.execute(req.url.split("=")[1]);
-    
+
+        try {
+            const rawQueryParams = req.url.split("/?token=")[1];
+            const tokenFromQueryParam = rawQueryParams[1]
+            webSocketAuthInterceptor.execute(tokenFromQueryParam);
+        } catch (error) {
+            if (error instanceof TypeError) {   
+                ws.send(JSON.stringify({ error: true, message: "malformed websocket url; check the manual on section 'WebSocket Gateway URL' and try again." }));
+            }
+        }
+        
         websocketConnection.on("message", async (message) => {
             try {
                 const jsonMessage = JSON.parse(message.toString());
-                console.log(jsonMessage);
                 const result = await webSocketMessageOrchestratorInterceptor.execute(jsonMessage);
                 if (result.error) {
                     ws.send(JSON.stringify({ error: true, message: result.message }));

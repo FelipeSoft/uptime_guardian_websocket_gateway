@@ -20,7 +20,7 @@ export default class WebSocketAuthInterceptor {
                 }
             } catch (error) {
                 if (error instanceof JsonWebTokenError) {
-                    this.webSocketConnection.close(4001, "malformed token")
+                    this.webSocketConnection.close(4001, "expired token")
                 }
             }
             return
