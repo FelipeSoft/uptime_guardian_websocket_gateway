@@ -24,12 +24,11 @@ export default class OrchestratorMessage {
         return (
             typeof msg.timestamp === "number" &&
             msg.timestampType === "created_time" &&
-            msg.unit === "proxy" &&
+            msg.unit === "proxy" || msg.unit === "host" &&
             typeof msg.identifier === "number" &&
             msg.data !== undefined &&
             msg.data.metric === "ms" &&
-            typeof msg.data.latency === "number" &&
-            typeof msg.data.heartbeat === "number"
+            typeof msg.data.latency === "number"
         )
     }
 }
@@ -37,11 +36,10 @@ export default class OrchestratorMessage {
 type Input = {
     timestamp: number;
     timestampType: "created_time";
-    unit: "proxy";
+    unit: "proxy" | "host";
     identifier: number;
     data: {
         metric: "ms";
         latency: number;
-        heartbeat: number;
     }
 }
