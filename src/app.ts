@@ -29,30 +29,27 @@ function init() {
         const webSocketAuthInterceptor = new WebSocketAuthInterceptor(ws, jwtTokenManagerAdapter);
 
         try {
-            const rawQueryParams = req.url.split("/?token=")[1];
+            const rawQueryParams = req.url.split("/?token=");
             const tokenFromQueryParam = rawQueryParams[1]
             webSocketAuthInterceptor.execute(tokenFromQueryParam);
         } catch (error) {
-            if (error instanceof TypeError) {   
+            if (error instanceof TypeError) {
                 ws.send(JSON.stringify({ error: true, message: "malformed websocket url; check the manual on section 'WebSocket Gateway URL' and try again." }));
             }
         }
-        
+
         websocketConnection.on("message", async (message) => {
             try {
                 const jsonMessage = JSON.parse(message.toString());
                 const result = await webSocketMessageOrchestratorInterceptor.execute(jsonMessage);
                 if (result.error) {
                     ws.send(JSON.stringify({ error: true, message: result.message }));
-                    console.error("WebSocket error:", result.message);
                 }
             } catch (error) {
                 if (error instanceof Error) {
                     ws.send(JSON.stringify({ error: true, message: error.message }));
-                    console.error("WebSocket error:", error.message);
                 } else {
                     ws.send(JSON.stringify({ error: true, message: "Internal Server Error" }));
-                    console.error("WebSocket error: Internal server error");
                 }
             }
         });

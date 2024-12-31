@@ -15,16 +15,16 @@ export default class WebSocketAuthInterceptor {
                 const currentTime = Math.floor(Date.now() / 1000);
 
                 if (validToken.exp < currentTime) {
-                    this.webSocketConnection.close(4001, "expired token")
+                    this.webSocketConnection.close(4001, "expired token");
                     return
                 }
             } catch (error) {
                 if (error instanceof JsonWebTokenError) {
-                    this.webSocketConnection.close(4001, "expired token")
+                    this.webSocketConnection.close(4001, "expired token");
                 }
             }
-            return
+            return;
         }
-        this.webSocketConnection.close(4001, "missing token")
+        this.webSocketConnection.close(4001, "missing token");
     }
 }
